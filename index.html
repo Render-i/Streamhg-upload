@@ -2,274 +2,307 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>StreamHG - Upload Video from URL (with Subfolders)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>StreamHG Upload from URL</title>
     <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 20px;
-            background: #f9f9f9;
-        }
-        h1 { text-align: center; color: #333; }
-        .form-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-        label { display: block; margin-bottom: 8px; font-weight: bold; }
-        input[type="text"], select {
-            width: 100%;
-            padding: 10px 36px 10px 12px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            min-height: 100vh;
+            padding: 1rem;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+        }
+        h1 {
+            font-size: 1.6rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            transition: border-color 0.2s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.15);
+        }
+        .input-wrapper {
+            position: relative;
         }
         .clear-btn {
             position: absolute;
-            right: 10px;
+            right: 0.8rem;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
-            font-size: 20px;
-            color: #777;
+            font-size: 1.6rem;
+            color: #6c757d;
             cursor: pointer;
-            padding: 0 6px;
+            padding: 0.3rem;
             line-height: 1;
             display: none;
         }
-        .clear-btn:hover { color: #333; }
+        .clear-btn:hover { color: #212529; }
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
         button {
+            flex: 1 1 180px;
+            padding: 0.9rem 1.2rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        #loadFoldersBtn {
+            background: #28a745;
+            color: white;
+        }
+        #loadFoldersBtn:hover:not(:disabled) { background: #218838; }
+        #uploadBtn {
             background: #007bff;
             color: white;
-            padding: 10px 18px;
-            border: none;
-            border-radius: 4px;
-            font-size: 15px;
-            cursor: pointer;
-            margin-right: 10px;
         }
-        button:hover { background: #0056b3; }
-        button:disabled { background: #aaa; cursor: not-allowed; }
-        #loadFoldersBtn { background: #28a745; }
-        #loadFoldersBtn:hover { background: #218838; }
+        #uploadBtn:hover:not(:disabled) { background: #0069d9; }
+        button:disabled {
+            background: #ccc !important;
+            cursor: not-allowed;
+        }
         #result {
-            margin-top: 30px;
-            padding: 15px;
-            border-radius: 4px;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
             white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 40vh;
+            overflow-y: auto;
         }
         .success { background: #d4edda; color: #155724; }
         .error   { background: #f8d7da; color: #721c24; }
         .info    { background: #e2e3e5; color: #383d41; }
-        small.note { display: block; margin-top: 6px; color: #666; font-size: 0.9em; }
-        #folderSelect { padding-right: 12px; }
-        option.level-1 { padding-left: 15px; }
-        option.level-2 { padding-left: 30px; }
-        option.level-3 { padding-left: 45px; }
-        option.level-4 { padding-left: 60px; }
-        option.level-5 { padding-left: 75px; }
+        small.note {
+            display: block;
+            margin-top: 0.4rem;
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+        option.level-1 { padding-left: 1.2rem; }
+        option.level-2 { padding-left: 2.4rem; }
+        option.level-3 { padding-left: 3.6rem; }
+        option.level-4 { padding-left: 4.8rem; }
+        option.level-5 { padding-left: 6rem; }
+
+        @media (max-width: 480px) {
+            .container { padding: 1.2rem; }
+            h1 { font-size: 1.4rem; }
+            button { flex: 1 1 100%; }
+            .buttons { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
-    <h1>Upload Video to StreamHG from URL (with Subfolders)</h1>
+<div class="container">
+
+    <h1>Upload Video to StreamHG</h1>
 
     <div class="form-group">
-        <label for="apiKey">Your StreamHG API Key:</label>
-        <input type="text" id="apiKey" placeholder="e.g. 45pnnxooi9wrxd5k5..." />
+        <label for="apiKey">API Key</label>
+        <input type="text" id="apiKey" placeholder="Your StreamHG API key" />
     </div>
 
     <div class="form-group">
-        <label for="videoUrl">Video URL (direct link):</label>
-        <input type="text" id="videoUrl" placeholder="https://example.com/my-video.mp4" />
-        <button type="button" class="clear-btn" id="clearUrl">×</button>
+        <label for="videoUrl">Video URL</label>
+        <div class="input-wrapper">
+            <input type="text" id="videoUrl" placeholder="https://example.com/video.mp4" />
+            <button type="button" class="clear-btn" id="clearUrl">×</button>
+        </div>
     </div>
 
     <div class="form-group">
-        <label>Folder Selection:</label>
-        <button id="loadFoldersBtn">Load Folders (incl. subfolders)</button>
-        <small class="note">Fetches root + subfolders (up to 5 levels deep)</small>
+        <label>Folder Selection</label>
+        <button id="loadFoldersBtn">Load Folders (with subs)</button>
+        <small class="note">Click after entering API key — fetches root + subfolders</small>
     </div>
 
     <div class="form-group" id="folderSelectGroup" style="display:none;">
-        <label for="folderSelect">Select Folder:</label>
+        <label for="folderSelect">Choose Folder</label>
         <select id="folderSelect">
             <option value="0">Root / Default (ID: 0)</option>
         </select>
     </div>
 
     <div class="form-group">
-        <label for="folderId">Folder ID (fld_id) – auto-filled from selection:</label>
-        <input type="text" id="folderId" placeholder="e.g. 25" value="0" />
+        <label for="folderId">Folder ID (auto-filled)</label>
+        <input type="text" id="folderId" value="0" placeholder="e.g. 25" />
         <small class="note">0 = root folder</small>
     </div>
 
-    <button id="uploadBtn">Start Upload</button>
+    <div class="buttons">
+        <button id="uploadBtn">Start Upload</button>
+    </div>
 
     <div id="result"></div>
 
-    <script>
-        const apiKeyInput    = document.getElementById('apiKey');
-        const urlInput       = document.getElementById('videoUrl');
-        const clearBtn       = document.getElementById('clearUrl');
-        const loadFoldersBtn = document.getElementById('loadFoldersBtn');
-        const folderSelect   = document.getElementById('folderSelect');
-        const folderSelectGroup = document.getElementById('folderSelectGroup');
-        const folderInput    = document.getElementById('folderId');
-        const uploadBtn      = document.getElementById('uploadBtn');
-        const resultDiv      = document.getElementById('result');
+</div>
 
-        const MAX_DEPTH = 5; // safety limit to prevent infinite recursion
+<script>
+    const apiKeyInput    = document.getElementById('apiKey');
+    const urlInput       = document.getElementById('videoUrl');
+    const clearBtn       = document.getElementById('clearUrl');
+    const loadBtn        = document.getElementById('loadFoldersBtn');
+    const folderSelect   = document.getElementById('folderSelect');
+    const folderGroup    = document.getElementById('folderSelectGroup');
+    const folderInput    = document.getElementById('folderId');
+    const uploadBtn      = document.getElementById('uploadBtn');
+    const result         = document.getElementById('result');
 
-        // Clear URL button
-        urlInput.addEventListener('input', () => {
-            clearBtn.style.display = urlInput.value.trim() ? 'block' : 'none';
-        });
-        clearBtn.addEventListener('click', () => {
-            urlInput.value = '';
-            clearBtn.style.display = 'none';
-            urlInput.focus();
-        });
+    const MAX_DEPTH = 5;
 
-        // Sync dropdown → text input
-        folderSelect.addEventListener('change', () => {
-            folderInput.value = folderSelect.value;
-        });
+    urlInput.addEventListener('input', () => {
+        clearBtn.style.display = urlInput.value.trim() ? 'block' : 'none';
+    });
 
-        // Sync text → dropdown (if manual edit)
-        folderInput.addEventListener('input', () => {
-            const val = folderInput.value.trim();
-            if (/^\d+$/.test(val) && folderSelect.querySelector(`option[value="${val}"]`)) {
-                folderSelect.value = val;
+    clearBtn.addEventListener('click', () => {
+        urlInput.value = '';
+        clearBtn.style.display = 'none';
+        urlInput.focus();
+    });
+
+    folderSelect.addEventListener('change', () => {
+        folderInput.value = folderSelect.value;
+    });
+
+    folderInput.addEventListener('input', () => {
+        const val = folderInput.value.trim();
+        if (/^\d+$/.test(val) && folderSelect.querySelector(`option[value="${val}"]`)) {
+            folderSelect.value = val;
+        } else {
+            folderSelect.value = '0';
+        }
+    });
+
+    async function fetchFolders(parentId = 0, depth = 0, prefix = '') {
+        if (depth > MAX_DEPTH) return [];
+        const key = apiKeyInput.value.trim();
+        const params = new URLSearchParams({ key, fld_id: parentId, files: 0 });
+        try {
+            const res = await fetch(`https://streamhgapi.com/api/folder/list?${params}`);
+            const data = await res.json();
+            if (data.status !== 200 || data.msg !== "OK" || !data.result?.folders) return [];
+            let all = [];
+            for (const f of data.result.folders || []) {
+                const name = f.name || 'Unnamed';
+                const id = f.fld_id;
+                const display = prefix + name + ` (ID: ${id})`;
+                const opt = new Option(display, id);
+                opt.className = `level-${depth + 1}`;
+                all.push(opt);
+                const subs = await fetchFolders(id, depth + 1, prefix + '→ ');
+                all.push(...subs);
+            }
+            return all;
+        } catch {
+            return [];
+        }
+    }
+
+    loadBtn.addEventListener('click', async () => {
+        const key = apiKeyInput.value.trim();
+        if (!key) return show('Enter API key first', 'error');
+
+        loadBtn.disabled = true;
+        loadBtn.textContent = 'Loading...';
+        show('Fetching folders...', 'info');
+
+        try {
+            folderSelect.innerHTML = '<option value="0">Root / Default (ID: 0)</option>';
+            const subs = await fetchFolders(0, 0, '');
+            subs.forEach(o => folderSelect.appendChild(o));
+            folderGroup.style.display = 'block';
+            show(`Folders loaded (${subs.length} subfolders found). Select one.`, 'success');
+        } catch (e) {
+            show(`Error: ${e.message}`, 'error');
+        } finally {
+            loadBtn.disabled = false;
+            loadBtn.textContent = 'Load Folders (with subs)';
+        }
+    });
+
+    uploadBtn.addEventListener('click', async () => {
+        const key = apiKeyInput.value.trim();
+        const url = urlInput.value.trim();
+        const fid = folderInput.value.trim();
+
+        if (!key) return show('API key required', 'error');
+        if (!url) return show('Video URL required', 'error');
+        if (!/^https?:\/\//.test(url)) return show('URL must start with http(s)://', 'error');
+        if (!/^\d+$/.test(fid)) return show('Folder ID must be a number', 'error');
+
+        uploadBtn.disabled = true;
+        show('Uploading…', 'info');
+
+        try {
+            const p = new URLSearchParams({ key, url });
+            if (fid !== '0') p.append('fld_id', fid);
+            const res = await fetch(`https://streamhgapi.com/api/upload/url?${p}`);
+            const data = await res.json();
+
+            if (data.status === 200 && data.msg === "OK" && data.result?.filecode) {
+                show(`Success!\nFilecode: ${data.result.filecode}\n\nLink: https://streamhg.com/${data.result.filecode}`, 'success');
             } else {
-                folderSelect.value = '0';
+                show(`Error: ${data.msg || 'Unknown'} (status ${data.status || '?'})`, 'error');
             }
-        });
-
-        // Recursive folder fetch
-        async function fetchFoldersRecursively(parentId = 0, depth = 0, prefix = '') {
-            if (depth > MAX_DEPTH) return [];
-
-            const key = apiKeyInput.value.trim();
-            const params = new URLSearchParams({ key, fld_id: parentId, files: 0 });
-            const url = `https://streamhgapi.com/api/folder/list?${params}`;
-
-            try {
-                const res = await fetch(url);
-                const data = await res.json();
-
-                if (data.status !== 200 || data.msg !== "OK" || !data.result?.folders) {
-                    return [];
-                }
-
-                const folders = data.result.folders || [];
-                let allFolders = [];
-
-                for (const folder of folders) {
-                    const name = folder.name || 'Unnamed';
-                    const id   = folder.fld_id;
-                    const indent = prefix ? prefix + '→ ' : '';
-                    const displayName = indent + name + ` (ID: ${id})`;
-
-                    const option = document.createElement('option');
-                    option.value = id;
-                    option.textContent = displayName;
-                    option.className = `level-${depth + 1}`;
-                    allFolders.push(option);
-
-                    // Recurse into subfolders
-                    const subFolders = await fetchFoldersRecursively(id, depth + 1, indent);
-                    allFolders = allFolders.concat(subFolders);
-                }
-
-                return allFolders;
-            } catch (err) {
-                console.error('Fetch error at depth', depth, err);
-                return [];
-            }
+        } catch (e) {
+            show(`Network error: ${e.message}`, 'error');
+        } finally {
+            uploadBtn.disabled = false;
         }
+    });
 
-        // Load folders button
-        loadFoldersBtn.addEventListener('click', async () => {
-            const apiKey = apiKeyInput.value.trim();
-            if (!apiKey) return showMessage('Enter your API key first.', 'error');
+    function show(text, type = 'info') {
+        result.textContent = text;
+        result.className = type;
+    }
 
-            loadFoldersBtn.disabled = true;
-            loadFoldersBtn.textContent = 'Loading folders...';
-            showMessage('Fetching folder structure (may take a moment for deep nesting)...', 'info');
-
-            try {
-                folderSelect.innerHTML = '<option value="0">Root / Default (ID: 0)</option>';
-
-                const subOptions = await fetchFoldersRecursively(0, 0, '');
-
-                subOptions.forEach(opt => folderSelect.appendChild(opt));
-
-                folderSelectGroup.style.display = 'block';
-                showMessage(`Loaded folders (including subfolders). Select one below.`, 'success');
-            } catch (err) {
-                showMessage(`Error loading folders: ${err.message}`, 'error');
-            } finally {
-                loadFoldersBtn.disabled = false;
-                loadFoldersBtn.textContent = 'Load Folders (incl. subfolders)';
-            }
-        });
-
-        // Upload (same as before)
-        uploadBtn.addEventListener('click', async () => {
-            const apiKey = apiKeyInput.value.trim();
-            const url    = urlInput.value.trim();
-            let   fldId  = folderInput.value.trim();
-
-            if (!apiKey) return showMessage('Please enter your API key.', 'error');
-            if (!url)    return showMessage('Please enter a video URL.', 'error');
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                return showMessage('Video URL must start with http(s)://', 'error');
-            }
-            if (!/^\d+$/.test(fldId)) {
-                return showMessage('Folder ID must be a number.', 'error');
-            }
-
-            uploadBtn.disabled = true;
-            showMessage('Uploading...', 'info');
-
-            try {
-                const params = new URLSearchParams({ key: apiKey, url });
-                if (fldId !== '0') params.append('fld_id', fldId);
-
-                const apiUrl = `https://streamhgapi.com/api/upload/url?${params}`;
-                const res = await fetch(apiUrl);
-                const data = await res.json();
-
-                if (data.status === 200 && data.msg === "OK" && data.result?.filecode) {
-                    showMessage(
-                        `Success! Filecode: ${data.result.filecode}\n\n` +
-                        `Watch link (after processing): https://streamhg.com/${data.result.filecode}`,
-                        'success'
-                    );
-                } else {
-                    showMessage(
-                        `API Error: ${data.msg || 'Unknown'}\nStatus: ${data.status || '?'}`,
-                        'error'
-                    );
-                }
-            } catch (err) {
-                showMessage(`Network error: ${err.message}`, 'error');
-            } finally {
-                uploadBtn.disabled = false;
-            }
-        });
-
-        function showMessage(text, type = 'info') {
-            resultDiv.textContent = text;
-            resultDiv.className = type;
-        }
-
-        if (urlInput.value.trim()) clearBtn.style.display = 'block';
-    </script>
+    if (urlInput.value.trim()) clearBtn.style.display = 'block';
+</script>
 
 </body>
     </html>
